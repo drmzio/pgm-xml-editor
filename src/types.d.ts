@@ -1,5 +1,5 @@
 export interface AuthorType {
   uuid: string;
-  text: string;
+  name: string;
   contribution: string;
 }

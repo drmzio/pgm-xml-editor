@@ -138,7 +138,7 @@ function App() {
                 >
                   {Object.keys(GAMEMODES).map(gamemode => (
                     <option key={gamemode} value={gamemode}>
-                      {GAMEMODES[gamemode]}
+                      {`${GAMEMODES[gamemode]} (${gamemode.toUpperCase()})`}
                     </option>
                   ))}
                 </TextField>

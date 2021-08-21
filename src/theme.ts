@@ -35,5 +35,10 @@ export const theme = createTheme({
         disableElevation: true
       }
     },
+    MuiTooltip: {
+      defaultProps: {
+        placement: 'top'
+      }
+    }
   }
 });
