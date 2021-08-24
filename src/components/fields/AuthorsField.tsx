@@ -1,20 +1,35 @@
-import React, { useRef, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import {
-  Avatar, Box, Button,
-  FormLabel, IconButton,
+  Avatar,
+  Box,
+  Button,
+  FormLabel,
+  IconButton,
   List,
   ListItem,
   ListItemAvatar,
   ListItemSecondaryAction,
   ListItemText,
   Paper,
-  Dialog, DialogTitle, DialogContent, TextField, Stack, Divider, InputAdornment, Popper, CircularProgress, Tooltip
+  Dialog,
+  TextField,
+  Stack,
+  Divider,
+  Popper,
+  CircularProgress,
+  Tooltip,
+  AppBar,
+  Toolbar,
+  Typography, Link
 } from '@material-ui/core';
 import { AuthorType } from '../../types';
 import PersonIcon from '@material-ui/icons/Person';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
-import SearchIcon from '@material-ui/icons/Search';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import HelpIcon from '@material-ui/icons/Help';
+import ArrowRightAltIcon from '@material-ui/icons/ArrowRightAlt';
+import { GlobalContext } from '../../context';
 
 interface Props {
   authors: AuthorType[];
@@ -32,15 +47,16 @@ type SearchResult = {
 const initialValues = { uuid: '', name: '', contribution: '' };
 
 export default function AuthorsField({ authors, onChange }: Props) {
+  const { setReference } = useContext(GlobalContext);
   const [open, setOpen] = useState(false);
   const [values, setValues] = useState(initialValues);
   const [search, setSearch] = useState('');
   const [result, setResult] = useState<SearchResult>(null);
+  const [show, setShow] = useState(true);
   const searchRef = useRef(null);
 
-  const removeAuthor = () => {
-    const newAuthors = [ ...authors ];
-    newAuthors.pop();
+  const removeAuthor = (index = 0) => {
+    const newAuthors = authors.filter((a, i) => i !== index);
     onChange('authors', newAuthors);
   };
   const handleAddAuthor = () => {
@@ -103,9 +119,7 @@ export default function AuthorsField({ authors, onChange }: Props) {
       }
     ]);
     setOpen(false);
-    setSearch('');
-    setResult(null);
-    setValues(initialValues);
+    dialogCleanUp();
   };
 
   const handleApplyValues = () => {
@@ -117,20 +131,51 @@ export default function AuthorsField({ authors, onChange }: Props) {
     });
   };
 
-  const handleDialogClose = () => {
+  // Resets the states to the initial values.
+  const dialogCleanUp = () => {
     setSearch('');
     setResult(null);
     setValues(initialValues);
   };
 
+  const handleClickReference = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    setReference(e.currentTarget.href);
+  };
+
   return (
-    <Paper variant="outlined" elevation={0} sx={{ p: 2 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', mt: -0.5 }}>
-        <FormLabel component="div" sx={{ mr: 'auto' }}>Authors</FormLabel>
-        <Button size="small" startIcon={<AddIcon />} onClick={handleAddAuthor}>Add author</Button>
-        <Dialog fullWidth maxWidth="xs" open={open} onClose={handleCloseDialog} TransitionProps={{ onExit: handleDialogClose }}>
-          <DialogTitle>Add author</DialogTitle>
-          <DialogContent>
+    <Paper
+      variant="outlined"
+      elevation={0}
+      sx={{ position: 'relative', py: 2, px: 2, ml: -2, mr: -2 }}
+      style={{ borderLeft: '0 none', borderRight: '0 none', borderRadius: 0 }}
+    >
+      <Box sx={{ display: 'flex', alignItems: 'center', mt: -0.5, pr: 4 }}>
+        <FormLabel component="div" sx={{ mr: 'auto' }}>
+          {`Authors (${authors.length})`}
+          <Tooltip disableInteractive={false} title={
+            <>
+              <div>A major author of the map</div>
+              <div>
+                <Link color="inherit" href="https://pgm.dev/docs/modules/general/main/#authors--contributors" onClick={handleClickReference}>
+                  See reference
+                  <ArrowRightAltIcon fontSize="small" sx={{ ml: 0.5 }} style={{ verticalAlign: 'middle' }} />
+                </Link>
+              </div>
+            </>
+          }>
+            <HelpIcon sx={{ ml: 0.5 }} fontSize="inherit" color="disabled" tabIndex={0} style={{ verticalAlign: 'middle' }} />
+          </Tooltip>
+        </FormLabel>
+        <Button size="small" variant="outlined" startIcon={<AddIcon />} onClick={handleAddAuthor}>Add author</Button>
+        <Dialog fullWidth maxWidth="xs" open={open} onClose={handleCloseDialog} TransitionProps={{ onExit: dialogCleanUp }}>
+          {/*<DialogTitle>Add author</DialogTitle>*/}
+          <AppBar position="relative" color="transparent">
+            <Toolbar>
+              <Typography variant="h6">Add author</Typography>
+            </Toolbar>
+          </AppBar>
+          <Box sx={{ p: 3, pt: 0 }}>
             <form onSubmit={handleSearchSubmit}>
               <TextField
                 autoFocus
@@ -180,6 +225,7 @@ export default function AuthorsField({ authors, onChange }: Props) {
                 fullWidth
                 variant="outlined"
                 label="Author name"
+                helperText="The author without a Minecraft account"
                 name="name"
                 value={values.name}
                 onChange={handleChangeValue}
@@ -194,17 +240,17 @@ export default function AuthorsField({ authors, onChange }: Props) {
                 onChange={handleChangeValue}
               />
             </Stack>
-            <Box sx={{ mt: 1, display: 'flex', justifyContent: 'flex-end', color: 'text.secondary' }}>
+            <Box sx={{ pt: 2, display: 'flex', justifyContent: 'flex-end', color: 'text.secondary' }}>
               <Stack direction="row-reverse" spacing={1}>
                 <Button variant="contained">Save</Button>
                 <Button color="inherit" onClick={handleCloseDialog}>Cancel</Button>
               </Stack>
             </Box>
-          </DialogContent>
+          </Box>
         </Dialog>
       </Box>
       {authors.length > 0 && (
-        <List dense sx={{ '& > * + *': { mt: 1 } }}>
+        <List dense sx={{ '& > * + *': { mt: 1 } }} style={{ display: show ? 'block' : 'none' }}>
           {authors.map((author, i) => (
             <ListItem key={i} disableGutters disablePadding button onClick={() => setOpen(true)}>
               <ListItemAvatar>
@@ -222,14 +268,23 @@ export default function AuthorsField({ authors, onChange }: Props) {
                 sx={{ m: 0 }}
               />
               <ListItemSecondaryAction>
-                <IconButton onClick={removeAuthor}>
-                  <DeleteIcon />
-                </IconButton>
+                <Tooltip title="Remove this author">
+                  <IconButton onClick={() => removeAuthor(i)}>
+                    <DeleteIcon />
+                  </IconButton>
+                </Tooltip>
               </ListItemSecondaryAction>
             </ListItem>
           ))}
         </List>
       )}
+      <Box sx={{ position: 'absolute', top: 0, right: 0, m: 1.5 }}>
+        <Tooltip title={show ? 'Minimize' : 'Maximize'}>
+          <IconButton size="small" onClick={() => setShow(!show)}>
+            <KeyboardArrowDownIcon fontSize="small" style={{ transform: show ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+          </IconButton>
+        </Tooltip>
+      </Box>
     </Paper>
   )
 }

@@ -7,6 +7,7 @@ import { StylesProvider } from '@material-ui/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 
 import 'simplebar/dist/simplebar.min.css';
+import GlobalContextProvider from './components/GlobalContextProvider';
 import { theme } from './theme';
 
 ReactDOM.render(
@@ -14,7 +15,9 @@ ReactDOM.render(
     <ThemeProvider theme={theme}>
       <StylesProvider injectFirst>
         <CssBaseline />
-        <App />
+        <GlobalContextProvider>
+          <App />
+        </GlobalContextProvider>
       </StylesProvider>
     </ThemeProvider>
   </React.StrictMode>,

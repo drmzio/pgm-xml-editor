@@ -3,6 +3,25 @@ import { createTheme } from '@material-ui/core/styles';
 const defaultTheme = createTheme();
 
 export const theme = createTheme({
+  typography: {
+    fontFamily: [
+      'Inter',
+      '-apple-system',
+      'BlinkMacSystemFont',
+      '"Segoe UI"',
+      'Roboto',
+      '"Helvetica Neue"',
+      'Arial',
+      'sans-serif',
+      '"Apple Color Emoji"',
+      '"Segoe UI Emoji"',
+      '"Segoe UI Symbol"',
+    ].join(','),
+    h1: { fontWeight: 600 },
+    h2: { fontWeight: 600 },
+    h3: { fontWeight: 600 },
+    h4: { fontWeight: 600 },
+  },
   components: {
     MuiAppBar: {
       defaultProps: {
@@ -11,6 +30,16 @@ export const theme = createTheme({
       styleOverrides: {
         colorDefault: {
           backgroundColor: defaultTheme.palette.background.paper,
+        }
+      }
+    },
+    MuiToolbar: {
+      styleOverrides: {
+        dense: {
+          [defaultTheme.breakpoints.up('sm')]: {
+            paddingLeft: defaultTheme.spacing(2),
+            paddingRight: defaultTheme.spacing(2),
+          }
         }
       }
     },
@@ -33,11 +62,30 @@ export const theme = createTheme({
     MuiButton: {
       defaultProps: {
         disableElevation: true
+      },
+      styleOverrides: {
+        root: {
+          minWidth: 80,
+          textTransform: 'none',
+        }
       }
     },
     MuiTooltip: {
       defaultProps: {
-        placement: 'top'
+        placement: 'top',
+        disableInteractive: true,
+      }
+    },
+    MuiMenuItem: {
+      styleOverrides: {
+        root: {
+          fontSize: defaultTheme.typography.pxToRem(15),
+        }
+      }
+    },
+    MuiDialog: {
+      defaultProps: {
+        scroll: 'body'
       }
     }
   }

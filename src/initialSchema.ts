@@ -1,11 +1,11 @@
 export const initialSchema = {
   name: 'Airship Battle',
   version: '1.0.4',
-  objective: 'Leak lava from the enemy\'s obsidian core into the void.',
-  gamemode: 'ctf',
+  objective: 'Leak lava from the enemy\'s obsidian core into the void',
+  gamemode: 'ctw',
   authors: [
-    { uuid: null, name: 'A person', contribution: null },
-    { uuid: 'ef4ea031-998f-4ec9-b7b6-1bdd428bcef8', name: null, contribution: null },
-    { uuid: 'ef4ea031-998f-4ec9-b7b6-1bdd428bcef8', name: 'Plastix', contribution: 'Clarification of element usage, etc.' },
+    { uuid: null, name: 'John Doe', contribution: null },
+    { uuid: '3c7db14d-ac4b-4e35-b2c6-3b2237f382be', name: 'Apple', contribution: null },
+    { uuid: 'ef4ea031-998f-4ec9-b7b6-1bdd428bcef8', name: 'Plastix', contribution: null },
   ]
 };
