@@ -52,6 +52,9 @@ export const theme = createTheme({
     },
     MuiOutlinedInput: {
       styleOverrides: {
+        root: {
+          backgroundColor: '#fff'
+        },
         notchedOutline: {
           '& legend': {
             fontSize: '0.835em'
@@ -87,6 +90,6 @@ export const theme = createTheme({
       defaultProps: {
         scroll: 'body'
       }
-    }
+    },
   }
 });

@@ -22,7 +22,6 @@ import {
   Toolbar,
   Typography, Link
 } from '@material-ui/core';
-import { AuthorType } from '../../types';
 import PersonIcon from '@material-ui/icons/Person';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
@@ -30,10 +29,12 @@ import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import HelpIcon from '@material-ui/icons/Help';
 import ArrowRightAltIcon from '@material-ui/icons/ArrowRightAlt';
 import { GlobalContext } from '../../context';
+import { FieldProps } from '../../types';
 
-interface Props {
-  authors: AuthorType[];
-  onChange: (k, v) => void;
+interface AuthorType {
+  uuid: string;
+  name: string;
+  contribution: string;
 }
 
 type SearchResult = {
@@ -46,7 +47,7 @@ type SearchResult = {
 
 const initialValues = { uuid: '', name: '', contribution: '' };
 
-export default function AuthorsField({ authors, onChange }: Props) {
+export default function AuthorsField({ name, value, onUpdate }: FieldProps) {
   const { setReference } = useContext(GlobalContext);
   const [open, setOpen] = useState(false);
   const [values, setValues] = useState(initialValues);
@@ -56,8 +57,8 @@ export default function AuthorsField({ authors, onChange }: Props) {
   const searchRef = useRef(null);
 
   const removeAuthor = (index = 0) => {
-    const newAuthors = authors.filter((a, i) => i !== index);
-    onChange('authors', newAuthors);
+    const newAuthors = value.filter((a, i) => i !== index);
+    onUpdate(name, newAuthors);
   };
   const handleAddAuthor = () => {
     setOpen(true);
@@ -103,15 +104,15 @@ export default function AuthorsField({ authors, onChange }: Props) {
     const { uuid, username } = result;
 
     // Checks for duplicates
-    const findAuthor = authors.find(a => a.uuid === uuid);
+    const findAuthor = value.find(a => a.uuid === uuid);
 
     if (findAuthor) {
       alert('Duplicate!');
       return;
     }
 
-    onChange('authors', [
-      ...authors,
+    onUpdate('authors', [
+      ...value,
       {
         uuid: uuid,
         name: username,
@@ -152,7 +153,7 @@ export default function AuthorsField({ authors, onChange }: Props) {
     >
       <Box sx={{ display: 'flex', alignItems: 'center', mt: -0.5, pr: 4 }}>
         <FormLabel component="div" sx={{ mr: 'auto' }}>
-          {`Authors (${authors.length})`}
+          {`Authors (${value.length})`}
           <Tooltip disableInteractive={false} title={
             <>
               <div>A major author of the map</div>
@@ -249,35 +250,37 @@ export default function AuthorsField({ authors, onChange }: Props) {
           </Box>
         </Dialog>
       </Box>
-      {authors.length > 0 && (
-        <List dense sx={{ '& > * + *': { mt: 1 } }} style={{ display: show ? 'block' : 'none' }}>
-          {authors.map((author, i) => (
-            <ListItem key={i} disableGutters disablePadding button onClick={() => setOpen(true)}>
-              <ListItemAvatar>
-                {Boolean(author.uuid) ? (
-                  <Avatar variant="square" src={`https://crafatar.com/avatars/${author.uuid}?overlay&size=40`} />
-                ) : (
-                  <Avatar variant="square">
-                    <PersonIcon />
-                  </Avatar>
-                )}
-              </ListItemAvatar>
-              <ListItemText
-                primary={author.name}
-                secondary={author.uuid}
-                sx={{ m: 0 }}
-              />
-              <ListItemSecondaryAction>
-                <Tooltip title="Remove this author">
-                  <IconButton onClick={() => removeAuthor(i)}>
-                    <DeleteIcon />
-                  </IconButton>
-                </Tooltip>
-              </ListItemSecondaryAction>
-            </ListItem>
-          ))}
-        </List>
-      )}
+      <div style={{ display: show ? 'block' : 'none' }}>
+        {value.length > 0 && (
+          <List dense sx={{ '& > * + *': { mt: 1 } }}>
+            {value.map((author, i) => (
+              <ListItem key={i} disableGutters disablePadding button onClick={() => setOpen(true)}>
+                <ListItemAvatar>
+                  {Boolean(author.uuid) ? (
+                    <Avatar variant="square" src={`https://crafatar.com/avatars/${author.uuid}?overlay&size=40`} />
+                  ) : (
+                    <Avatar variant="square">
+                      <PersonIcon />
+                    </Avatar>
+                  )}
+                </ListItemAvatar>
+                <ListItemText
+                  primary={author.name}
+                  secondary={author.uuid}
+                  sx={{ m: 0 }}
+                />
+                <ListItemSecondaryAction>
+                  <Tooltip title="Remove this author">
+                    <IconButton onClick={() => removeAuthor(i)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
+                </ListItemSecondaryAction>
+              </ListItem>
+            ))}
+          </List>
+        )}
+      </div>
       <Box sx={{ position: 'absolute', top: 0, right: 0, m: 1.5 }}>
         <Tooltip title={show ? 'Minimize' : 'Maximize'}>
           <IconButton size="small" onClick={() => setShow(!show)}>

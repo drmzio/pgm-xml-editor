@@ -1,5 +1,5 @@
-export interface AuthorType {
-  uuid: string;
+export interface FieldProps {
   name: string;
-  contribution: string;
+  value: any;
+  onUpdate: (name: string, value: any) => void;
 }

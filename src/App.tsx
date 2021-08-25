@@ -5,14 +5,12 @@ import {
   Stack,
   Grid,
   IconButton,
-  TextField,
   Toolbar,
   Typography,
   Box, Button, Popover, MenuList, MenuItem, ListItemIcon, Divider,
 } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import { GAMEMODES } from './constants';
-import AuthorsField from './components/fields/AuthorsField';
 import SimpleBar from 'simplebar-react';
 import { initialSchema } from './initialSchema';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
@@ -20,6 +18,7 @@ import AddIcon from '@material-ui/icons/Add';
 import FileDownloadOutlinedIcon from '@material-ui/icons/FileDownloadOutlined';
 import ReferenceDialog from './components/ReferenceDialog';
 import { GlobalContext } from './context';
+import fields from './components/fields';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -53,6 +52,7 @@ const useStyles = makeStyles(theme => ({
     overflow: 'hidden',
     display: 'flex',
     height: '100%',
+    backgroundColor: theme.palette.grey[50]
   },
   overlay: {
     position: 'absolute',
@@ -132,11 +132,6 @@ function App() {
   const [schema, setSchema] = useState(initialSchema);
   const [anchorEl, setAnchorEl] = useState(null);
 
-  const handleInputChange = (e: React.ChangeEvent) => {
-    const { name, value } = e.currentTarget as HTMLInputElement;
-    updateSchema(name, value);
-  };
-
   const updateSchema = (key: string, value: any) => {
     setSchema(prevSchema => ({
       ...prevSchema,
@@ -172,7 +167,7 @@ function App() {
 
   return (
     <div className={classes.root}>
-      <AppBar position="static" color="default" className={classes.header}>
+      <AppBar position="relative" color="default" className={classes.header}>
         <Toolbar>
           <IconButton
             size="large"
@@ -246,51 +241,17 @@ function App() {
             </AppBar>
             <Box component={SimpleBar} sx={{ flexGrow: 1, overflow: 'auto', height: '100%' }} autoHide={false}>
               <Stack spacing={3} sx={{ p: 2 }}>
-                <div>
-                  <TextField
-                    fullWidth
-                    select
-                    variant="filled"
-                    label="Gamemode"
-                    name="gamemode"
-                    value={schema.gamemode}
-                    onChange={handleInputChange}
-                    SelectProps={{
-                      native: true
-                    }}
-                  >
-                    {Object.keys(GAMEMODES).map(gamemode => (
-                      <option key={gamemode} value={gamemode}>
-                        {`${GAMEMODES[gamemode]} (${gamemode.toUpperCase()})`}
-                      </option>
-                    ))}
-                  </TextField>
-                </div>
-                <div>
-                  <TextField
-                    fullWidth
-                    id="filled-basic"
-                    label="Map name"
-                    variant="outlined"
-                    name="name"
-                    value={schema.name}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div>
-                  <TextField
-                    fullWidth
-                    id="filled-basic2"
-                    label="Objective"
-                    variant="outlined"
-                    name="objective"
-                    value={schema.objective}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div>
-                  <AuthorsField authors={schema.authors} onChange={updateSchema} />
-                </div>
+                {['gamemode', 'name', 'objective', 'rules', 'authors'].map(key => {
+                  return (!!fields[key] && !!schema[key]) ? (
+                    <div key={key}>
+                      {React.createElement(fields[key], {
+                        name: key,
+                        value: schema[key],
+                        onUpdate: updateSchema,
+                      })}
+                    </div>
+                  ) : null;
+                })}
               </Stack>
             </Box>
           </Grid>
@@ -303,19 +264,17 @@ function App() {
               </Toolbar>
             </AppBar>
             <Box component={SimpleBar} sx={{ flexGrow: 1, overflow: 'auto', height: '100%' }} autoHide={false}>
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Autem dicta distinctio dolor esse exercitationem in inventore ipsam iure laboriosam magnam, magni molestiae necessitatibus, obcaecati possimus quidem sequi sint suscipit totam!
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Autem dicta distinctio dolor esse exercitationem in inventore ipsam iure laboriosam magnam, magni molestiae necessitatibus, obcaecati possimus quidem sequi sint suscipit totam!
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Autem dicta distinctio dolor esse exercitationem in inventore ipsam iure laboriosam magnam, magni molestiae necessitatibus, obcaecati possimus quidem sequi sint suscipit totam!
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Autem dicta distinctio dolor esse exercitationem in inventore ipsam iure laboriosam magnam, magni molestiae necessitatibus, obcaecati possimus quidem sequi sint suscipit totam!
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Autem dicta distinctio dolor esse exercitationem in inventore ipsam iure laboriosam magnam, magni molestiae necessitatibus, obcaecati possimus quidem sequi sint suscipit totam!
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Autem dicta distinctio dolor esse exercitationem in inventore ipsam iure laboriosam magnam, magni molestiae necessitatibus, obcaecati possimus quidem sequi sint suscipit totam!
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Autem dicta distinctio dolor esse exercitationem in inventore ipsam iure laboriosam magnam, magni molestiae necessitatibus, obcaecati possimus quidem sequi sint suscipit totam!
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Autem dicta distinctio dolor esse exercitationem in inventore ipsam iure laboriosam magnam, magni molestiae necessitatibus, obcaecati possimus quidem sequi sint suscipit totam!
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Autem dicta distinctio dolor esse exercitationem in inventore ipsam iure laboriosam magnam, magni molestiae necessitatibus, obcaecati possimus quidem sequi sint suscipit totam!
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Autem dicta distinctio dolor esse exercitationem in inventore ipsam iure laboriosam magnam, magni molestiae necessitatibus, obcaecati possimus quidem sequi sint suscipit totam!
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Autem dicta distinctio dolor esse exercitationem in inventore ipsam iure laboriosam magnam, magni molestiae necessitatibus, obcaecati possimus quidem sequi sint suscipit totam!
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Autem dicta distinctio dolor esse exercitationem in inventore ipsam iure laboriosam magnam, magni molestiae necessitatibus, obcaecati possimus quidem sequi sint suscipit totam!
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Autem dicta distinctio dolor esse exercitationem in inventore ipsam iure laboriosam magnam, magni molestiae necessitatibus, obcaecati possimus quidem sequi sint suscipit totam!
+              {({ ctw: ['teams', 'wools', 'kits'], dtc: ['teams', 'cores', 'kits'], ctf: ['teams', 'flags', 'kits'] }[schema.gamemode] || []).map(field => {
+                return (!!fields[field]) ? (
+                  <div key={field}>
+                    {React.createElement(fields[field], {
+                      name: field,
+                      value: schema[field],
+                      onUpdate: updateSchema,
+                    })}
+                  </div>
+                ) : null;
+              })}
             </Box>
           </Grid>
           <Grid item xs={4} sx={{ flexDirection: 'column' }} className={classes.gridItem}>
