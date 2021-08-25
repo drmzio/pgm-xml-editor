@@ -14,7 +14,7 @@ export const initialSchema = {
     'Lorem ipsum dolor sit amet, consectetur adipisicing elitd kasmd kasmdk mak',
   ],
   teams: [
-    { id: 'blue-team', color: 'blue', max: 40, name: 'Blue' },
+    { id: 'blue-team', color: 'dark blue', max: 40, name: 'Blue' },
     { id: 'red-team', color: 'red', max: 40, name: 'Red' },
   ],
   kits: null,

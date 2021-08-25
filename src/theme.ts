@@ -70,6 +70,8 @@ export const theme = createTheme({
         root: {
           minWidth: 80,
           textTransform: 'none',
+          whiteSpace: 'nowrap',
+          flexShrink: 0
         }
       }
     },

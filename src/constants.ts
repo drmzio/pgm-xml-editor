@@ -30,3 +30,22 @@ export const DYE_COLORS = {
   RED: '#993333',
   BLACK: '#191919',
 };
+
+export const CHAT_COLORS = {
+  BLACK: '#000000',
+  DARK_BLUE: '#0714a7',
+  DARK_GREEN: '#19a81c',
+  DARK_AQUA: '#1caaa9',
+  DARK_RED: '#a8050e',
+  DARK_PURPLE: '#a817a8',
+  GOLD: '#fda92a',
+  GRAY: '#aaaaaa',
+  DARK_GRAY: '#555555',
+  BLUE: '#585cfb',
+  GREEN: '#5ffd61',
+  AQUA: '#61fffe',
+  RED: '#fd575a',
+  LIGHT_PURPLE: '#fd5dfc',
+  YELLOW: '#fffd64',
+  WHITE: '#ffffff',
+};

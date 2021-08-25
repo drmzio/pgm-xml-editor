@@ -264,17 +264,19 @@ function App() {
               </Toolbar>
             </AppBar>
             <Box component={SimpleBar} sx={{ flexGrow: 1, overflow: 'auto', height: '100%' }} autoHide={false}>
-              {({ ctw: ['teams', 'wools', 'kits'], dtc: ['teams', 'cores', 'kits'], ctf: ['teams', 'flags', 'kits'] }[schema.gamemode] || []).map(field => {
-                return (!!fields[field]) ? (
-                  <div key={field}>
-                    {React.createElement(fields[field], {
-                      name: field,
-                      value: schema[field],
-                      onUpdate: updateSchema,
-                    })}
-                  </div>
-                ) : null;
-              })}
+              <Stack spacing={3} sx={{ p: 2 }}>
+                {({ ctw: ['teams', 'wools', 'kits'], dtc: ['teams', 'cores', 'kits'], ctf: ['teams', 'flags', 'kits'] }[schema.gamemode] || []).map(field => {
+                  return (!!fields[field]) ? (
+                    <div key={field}>
+                      {React.createElement(fields[field], {
+                        name: field,
+                        value: schema[field],
+                        onUpdate: updateSchema,
+                      })}
+                    </div>
+                  ) : null;
+                })}
+              </Stack>
             </Box>
           </Grid>
           <Grid item xs={4} sx={{ flexDirection: 'column' }} className={classes.gridItem}>

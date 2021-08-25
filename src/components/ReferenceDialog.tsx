@@ -61,14 +61,14 @@ export default function ReferenceDialog({ url, onClose }) {
                 Reference
               </Typography>
               <Box sx={{ flexGrow: 1 }} />
-              <Stack direction="row" spacing={1}>
+              <Stack direction="row" spacing={1} sx={{ mr: -1 }}>
                 <Tooltip title="Open in a new tab">
                   <IconButton size="small" onClick={handleOpenTab}>
                     <OpenInNewIcon />
                   </IconButton>
                 </Tooltip>
                 <Tooltip title="Close">
-                  <IconButton edge="end" size="small" onClick={onClose}>
+                  <IconButton size="small" onClick={onClose}>
                     <CloseIcon />
                   </IconButton>
                 </Tooltip>
