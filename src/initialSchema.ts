@@ -9,13 +9,12 @@ export const initialSchema = {
     { uuid: 'ef4ea031-998f-4ec9-b7b6-1bdd428bcef8', name: 'Plastix', contribution: null },
   ],
   rules: [
-    'Rule number 1',
-    'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus assumenda culpa cupiditate eius fug Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus assumenda culpa cupiditate eius fug',
-    'Lorem ipsum dolor sit amet, consectetur adipisicing elitd kasmd kasmdk mak',
+    'Players may not obstruct the majority of the lane with lava or obsidian.',
+    'Players may not use lava or obsidian to block a team\'s spawn.'
   ],
   teams: [
-    { id: 'blue-team', color: 'dark blue', max: 40, name: 'Blue' },
-    { id: 'red-team', color: 'red', max: 40, name: 'Red' },
+    { id: 'blue-team', color: 'blue', max: 32, name: 'Blue' },
+    { id: 'red-team', color: 'dark red', max: 32, name: 'Red' },
   ],
   kits: null,
   wools: null,

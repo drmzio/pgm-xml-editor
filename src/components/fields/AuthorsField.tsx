@@ -1,35 +1,18 @@
 import React, { useContext, useRef, useState } from 'react';
 import {
-  Avatar,
-  Box,
-  Button,
-  FormLabel,
-  IconButton,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemSecondaryAction,
-  ListItemText,
-  Paper,
-  Dialog,
-  TextField,
-  Stack,
-  Divider,
-  Popper,
-  CircularProgress,
-  Tooltip,
-  AppBar,
-  Toolbar,
-  Typography, Link
+  Avatar, Box, Button, FormLabel, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText,
+  Dialog, TextField, Stack, Divider, Popper, CircularProgress, Tooltip, AppBar, Toolbar, Typography, Link, Paper,
+  InputAdornment
 } from '@material-ui/core';
 import PersonIcon from '@material-ui/icons/Person';
-import DeleteIcon from '@material-ui/icons/Delete';
+import DeleteIcon from '@material-ui/icons/DeleteOutline';
 import AddIcon from '@material-ui/icons/Add';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import HelpIcon from '@material-ui/icons/Help';
 import ArrowRightAltIcon from '@material-ui/icons/ArrowRightAlt';
 import { GlobalContext } from '../../context';
 import { FieldProps } from '../../types';
+import debounce from 'lodash/debounce';
 
 interface AuthorType {
   uuid: string;
@@ -45,15 +28,22 @@ type SearchResult = {
   created_at: any;
 }
 
+type SearchError = {
+  code: number;
+  error: string;
+  reason: string;
+}
+
 const initialValues = { uuid: '', name: '', contribution: '' };
 
 export default function AuthorsField({ name, value, onUpdate }: FieldProps) {
   const { setReference } = useContext(GlobalContext);
+  const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [values, setValues] = useState(initialValues);
-  const [search, setSearch] = useState('');
   const [result, setResult] = useState<SearchResult>(null);
   const [show, setShow] = useState(true);
+  const [error, setError] = useState<SearchError>(null);
   const searchRef = useRef(null);
 
   const removeAuthor = (index = 0) => {
@@ -75,10 +65,32 @@ export default function AuthorsField({ name, value, onUpdate }: FieldProps) {
     }));
   };
 
-  const handleChangeSearch = (e: React.ChangeEvent) => {
-    const { value } = e.currentTarget as HTMLInputElement;
-    setSearch(value);
+  const handleChangeSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsLoading(true);
+    setError(null);
+    setResult(null);
+    searchPlayer(e.target.value);
   };
+
+  const searchPlayer = debounce(async function (value: string) {
+    const searchResponse = await fetch(`https://api.ashcon.app/mojang/v2/user/${value}`, {
+      headers: {
+        'Accept': 'application/json'
+      }
+    });
+
+    const searchData = await searchResponse.json();
+
+    if (searchResponse.ok) {
+      setResult(searchData);
+      setError(null);
+    } else {
+      setResult(null);
+      setError(searchData);
+    }
+
+    setIsLoading(false);
+  }, 200);
 
   const handleCloseDialog = () => {
     setOpen(false);
@@ -86,18 +98,6 @@ export default function AuthorsField({ name, value, onUpdate }: FieldProps) {
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    searchPlayer();
-  };
-
-  const searchPlayer = () => {
-    fetch(`https://api.ashcon.app/mojang/v2/user/${search}`, {
-      headers: {
-        'Accept': 'application/json'
-      }
-    }).then(res => res.json()).then((data: SearchResult) => {
-      console.log(data);
-      setResult(data);
-    })
   };
 
   const handleAddPlayer = () => {
@@ -124,7 +124,6 @@ export default function AuthorsField({ name, value, onUpdate }: FieldProps) {
   };
 
   const handleApplyValues = () => {
-    setSearch('');
     setValues({
       uuid: result.uuid,
       name: result.username,
@@ -134,7 +133,6 @@ export default function AuthorsField({ name, value, onUpdate }: FieldProps) {
 
   // Resets the states to the initial values.
   const dialogCleanUp = () => {
-    setSearch('');
     setResult(null);
     setValues(initialValues);
   };
@@ -143,6 +141,8 @@ export default function AuthorsField({ name, value, onUpdate }: FieldProps) {
     e.preventDefault();
     setReference(e.currentTarget.href);
   };
+
+  const hasError = Boolean(error);
 
   return (
     <Paper
@@ -183,25 +183,37 @@ export default function AuthorsField({ name, value, onUpdate }: FieldProps) {
                 fullWidth
                 variant="outlined"
                 label="Find player"
-                helperText="Search for a player by their Minecraft username"
-                value={search}
+                error={hasError}
+                helperText={hasError ? error.reason : 'Search for a player by their Minecraft username'}
                 onChange={handleChangeSearch}
                 InputProps={{
-                  ref: searchRef
+                  ref: searchRef,
+                  endAdornment: isLoading ? (
+                    <InputAdornment position="end">
+                      <CircularProgress color="inherit" size={24} />
+                    </InputAdornment>
+                  ) : null
                 }}
               />
             </form>
-            <Popper open={Boolean(search)} anchorEl={searchRef.current} disablePortal style={{ zIndex: 999 }}>
-              <Paper elevation={8} style={{ width: searchRef.current?.getBoundingClientRect().width }}>
-                {Boolean(result) ? (
-                  <List dense sx={{ p: 1 }}>
+            {Boolean(result) && (
+              <Popper open={true} anchorEl={searchRef.current} disablePortal style={{ zIndex: 999 }}>
+                <Paper elevation={8} style={{ width: searchRef.current?.getBoundingClientRect().width }}>
+                  <List dense sx={{ p: 1 }} key={result.uuid}>
                     <ListItem disableGutters disablePadding button onClick={handleAddPlayer}>
                       <ListItemAvatar>
-                        <Avatar variant="square" src={`https://crafatar.com/avatars/${result.uuid}?overlay&size=40`} />
+                        <Avatar
+                          variant="square"
+                          src={`https://crafatar.com/avatars/${result.uuid}?overlay&size=40`}
+                          alt={result.username}
+                          imgProps={{
+                            width: 40, height: 40
+                          }}
+                        />
                       </ListItemAvatar>
                       <ListItemText
                         primary={result.username}
-                        secondary={result.uuid}
+                        secondary={<small>{result.uuid}</small>}
                         sx={{ m: 0 }}
                       />
                       <ListItemSecondaryAction>
@@ -213,13 +225,9 @@ export default function AuthorsField({ name, value, onUpdate }: FieldProps) {
                       </ListItemSecondaryAction>
                     </ListItem>
                   </List>
-                ) : (
-                  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', p: 2 }}>
-                    <CircularProgress size={24} />
-                  </Box>
-                )}
-              </Paper>
-            </Popper>
+                </Paper>
+              </Popper>
+            )}
             <Divider sx={{ my: 2 }}>OR</Divider>
             <Stack spacing={2}>
               <TextField
@@ -266,7 +274,7 @@ export default function AuthorsField({ name, value, onUpdate }: FieldProps) {
                 </ListItemAvatar>
                 <ListItemText
                   primary={author.name}
-                  secondary={author.uuid}
+                  secondary={<small>{author.uuid}</small>}
                   sx={{ m: 0 }}
                 />
                 <ListItemSecondaryAction>
